@@ -11,7 +11,7 @@ import io.github.cdimascio.dotenv.Dotenv;
  * @author arfanxn
  */
 public class ENV {
-    
+
     private Dotenv dotenv;
 
     // Static variable reference of instance type Singleton
@@ -26,31 +26,29 @@ public class ENV {
     // Singleton private constructor 
     private ENV() {
     }
-    
-    
+
     public ENV load() {
         this.dotenv = Dotenv.configure().load();
         return this;
+    } 
+    
+    // get retrieves env by key
+    public String get(String key) {
+        return this.dotenv.get(key);
     }
     
-    public ENV loadAndConfigure() {
-        this.dotenv = Dotenv.configure().load();
-        this.configureDatabase();
+    // should be called after load()
+    public ENV configure() {
+        this.configureAccessToken();
         return this;
     }
-    
-    public ENV configureDatabase () {
-        Database databaseConfig = Database.getInstance();
-        databaseConfig.setDriver(this.dotenv.get("DB_DRIVER", "jdbc"));
-        databaseConfig.setConnection(this.dotenv.get("DB_CONNECTION", "mysql"));
-        databaseConfig.setHost(this.dotenv.get("DB_HOST", "127.0.0.1"));
-        databaseConfig.setPort(this.dotenv.get("DB_PORT", "3306"));
-        databaseConfig.setDatabase(this.dotenv.get("DB_DATABASE", "e-parking")); // database name
-        databaseConfig.setUsername(this.dotenv.get("DB_USERNAME", "root")); 
-        databaseConfig.setPassword(this.dotenv.get("DB_PASSWORD", "")); // database name
 
-        return this;
-
+    public void configureAccessToken() {
+        String password = this.get("ACCESS_TOKEN_PASSWORD");
+        String filename = this.get("ACCESS_TOKEN_FILENAME");
+        AccessToken.getInstance()
+                .setEncryptorPassword(password)
+                .setFilename(filename);
     }
 
 }
