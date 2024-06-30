@@ -16,6 +16,7 @@ import views.auths.Login;
 import views.goals.*;
 import utilities.Context;
 import java.util.Map;
+import requests.UpdateUserRequest;
 
 /**
  *
@@ -42,7 +43,7 @@ public class EditSelf extends javax.swing.JPanel implements Contextable {
         try {
             this.ctx = this.service.showSelf(this.ctx);
             this.ctx.remove("message");
-            User user = this.ctx.<User>get("user", User.class);
+            User user = this.ctx.<User>get("user");
             this.nameField.setText(user.getName());
             this.emailField.setText(user.getEmail());
         } catch (ResponseException e) {
@@ -242,15 +243,14 @@ public class EditSelf extends javax.swing.JPanel implements Contextable {
     }// </editor-fold>//GEN-END:initComponents
 
     private void saveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
-        Map<String, String> form = new HashMap<>();
-        User user = this.ctx.get("user", User.class);
-        String userId = user.getId();
-        form.put("id", userId);
-        form.put("name", this.nameField.getText());
-        form.put("current_password", String.valueOf(this.currentPasswordField.getPassword()));
-        form.put("new_password", String.valueOf(this.newPasswordField.getPassword()));
-        form.put("new_password_confirmation", String.valueOf(this.newPasswordConfirmationField.getPassword()));
-        this.ctx.put("form", form);
+        UpdateUserRequest body = new UpdateUserRequest();
+        User user = this.ctx.<User>get("user");
+        body.setId(user.getId());
+        body.setName(this.nameField.getText());
+        body.setCurrentPassword(String.valueOf(this.currentPasswordField.getPassword()));
+        body.setNewPassword(String.valueOf(this.newPasswordField.getPassword()));
+        body.setNewPasswordConfirmation(String.valueOf(this.newPasswordConfirmationField.getPassword()));
+        this.ctx.put("body", body);
         try {
             this.ctx = service.update(this.ctx);
             Alert.message(this, ctx, null);

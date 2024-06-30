@@ -13,6 +13,7 @@ import interfaces.Contextable;
 import helpers.Alert;
 import java.util.HashMap;
 import java.util.Map;
+import requests.LoginRequest;
 
 /**
  *
@@ -24,7 +25,7 @@ public class Login extends javax.swing.JPanel implements Contextable {
     private AuthService service;
 
     /**
-     * Creates new form Login
+     * Creates new body Login
      * @param ctx
      */
     public Login(Context ctx) {
@@ -147,10 +148,10 @@ public class Login extends javax.swing.JPanel implements Contextable {
     }// </editor-fold>//GEN-END:initComponents
 
     private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginBtnActionPerformed
-        Map<String, String> form = new HashMap<>();
-        form.put("email", emailField.getText());
-        form.put("password", String.valueOf(passwordField.getPassword()));
-        this.ctx.put("form", form);
+        LoginRequest body = new LoginRequest();
+        body.setEmail(emailField.getText());
+        body.setPassword(String.valueOf(passwordField.getPassword()));
+        this.ctx.put("body", body);
         try {
             this.ctx = service.login(ctx);
             MainFrame.getInstance().setComponent(new Index(ctx));

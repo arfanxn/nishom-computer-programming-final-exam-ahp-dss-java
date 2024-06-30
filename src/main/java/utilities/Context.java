@@ -29,15 +29,15 @@ public class Context extends HashMap<String, Object> {
 
     // You can add optional methods for type safety:
     @SuppressWarnings("unchecked")
-    public <T> T get(String key, Class<T> type) {
+    public <T> T get(String key) {
         return (T) super.get(key);
     }
     
     // Pull will retrieve and delete after retrieval
-    public <T> T pull(String key, Class<T> type) {
-        var value = this.get(key, type);
+    public <T> T pull(String key) {
+        var value = this.get(key);
         this.remove(key);
-        return value;
+        return (T) value;
     }
 
     public Context only(String... keys) {

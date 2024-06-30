@@ -4,6 +4,7 @@
  */
 package responses;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -45,7 +46,7 @@ public class ResponseBody {
 
     }
 
-    public <T> T get(String keyPath, Class<T> valueTypeRef) throws IOException {
+    public JsonNode get(String keyPath) {
         String[] keys = keyPath.split("\\.");
         JsonNode node = this.jsonNode.get(keys[0]);
         if (node == null) {
@@ -59,12 +60,12 @@ public class ResponseBody {
                 return null;
             }
         }
+        return node;
+    }
 
-        if (valueTypeRef.equals(String.class)) {
-            return (T) node.asText();
-        } else {
-            return this.objectMapper.readValue(node.traverse(), valueTypeRef);
-        }
+    public <T1> T1 get(String keyPath, TypeReference<T1> typeRef) throws IOException {
+        JsonNode node = this.get(keyPath);
+        return this.objectMapper.readValue(node.traverse(), typeRef);
     }
 
     public HttpEntity getHttpEntity() {

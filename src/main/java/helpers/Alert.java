@@ -41,7 +41,7 @@ public class Alert {
 
     public static void message(Component parentComponent, Context ctx, Runnable afterward) {
         if (ctx.has("message")) {
-            var message = ctx.<String>pull("message", String.class);
+            var message = ctx.<String>pull("message");
             Alert.message(parentComponent, message, afterward);
         }
     }
@@ -64,7 +64,7 @@ public class Alert {
 
     public static void confirmation(Component parentComponent, Context ctx, Runnable afterwardYes, Runnable afterwardNo) {
         if (ctx.has("message")) {
-            var message = ctx.<String>pull("message", String.class);
+            var message = ctx.<String>pull("message");
             Alert.confirmation(parentComponent, message, afterwardYes, afterwardNo);
         }
     }

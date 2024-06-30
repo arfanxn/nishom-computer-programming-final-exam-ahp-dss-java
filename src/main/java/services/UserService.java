@@ -4,6 +4,7 @@
  */
 package services;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import configs.URI;
 import exceptions.ResponseException;
@@ -14,6 +15,8 @@ import utilities.Context;
 import models.User;
 import java.util.Map;
 import org.apache.http.entity.ContentType;
+import requests.UpdateUserRequest;
+
 
 /**
  *
@@ -36,7 +39,8 @@ public class UserService {
             }
             
             var body = new ResponseBody(response.getEntity());
-            User user = body.get("user", User.class);
+            User user = body.get("user", new TypeReference<User>() {
+            });
             ctx.put("message", body.getMessage());
             ctx.put("user", user);
 
@@ -50,12 +54,12 @@ public class UserService {
     public Context update (Context ctx) throws  ResponseException {
         try {
             ObjectMapper om = new ObjectMapper();
-            Map<String, String> form = ctx.<Map>get("form", Map.class);
-            String userId = String.valueOf(form.get("id"));
-            var jsonStr = om.writeValueAsString(form);
+            UpdateUserRequest reqBody = ctx.<UpdateUserRequest>get("body");
+            String userId = String.valueOf(reqBody.getId());
+            var reqBodyStr = om.writeValueAsString(reqBody);
             
             var response = Http.request(URI.api("/users/" + userId), "put")
-                    .bodyString(jsonStr, ContentType.APPLICATION_JSON)
+                    .bodyString(reqBodyStr, ContentType.APPLICATION_JSON)
                     .execute()
                     .returnResponse();
             var statusCode = response.getStatusLine().getStatusCode();

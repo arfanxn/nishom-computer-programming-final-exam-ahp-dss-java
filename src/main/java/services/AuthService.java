@@ -4,6 +4,7 @@
  */
 package services;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import configs.AccessToken;
@@ -28,11 +29,11 @@ public class AuthService {
     public Context login(Context ctx) throws ResponseException {
         try {
             ObjectMapper om = new ObjectMapper();
-            var jsonStr = om.writeValueAsString(ctx.get("form"));
+            var bodyStr = om.writeValueAsString(ctx.get("body"));
 
             var response = Http
                     .request(URI.api("/login"), "post")
-                    .bodyString(jsonStr, ContentType.APPLICATION_JSON)
+                    .bodyString(bodyStr, ContentType.APPLICATION_JSON)
                     .execute()
                     .returnResponse();
 
@@ -41,7 +42,8 @@ public class AuthService {
             }
 
             var body = new ResponseBody(response.getEntity());
-            var user = body.get("user", User.class);
+            var user = body.get("user", new TypeReference<User>() {
+            });
 
             AccessToken.getInstance().set(user.getAccessToken());
             
@@ -66,7 +68,7 @@ public class AuthService {
             }
 
             var body = new ResponseBody(response.getEntity());
-            
+
             ctx.put("message", body.getMessage());
 
             AccessToken.getInstance().remove();
