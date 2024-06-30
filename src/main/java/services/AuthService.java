@@ -8,7 +8,6 @@ import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import configs.AccessToken;
 import configs.URI;
-import org.json.JSONException;
 import org.apache.http.entity.ContentType;
 import models.User;
 import utilities.Context;
@@ -52,7 +51,7 @@ public class AuthService {
             ctx.put("user", user);
             ctx.put("is_auth", true);
 
-        } catch (JSONException | IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -74,7 +73,7 @@ public class AuthService {
 
             ctx.put("is_auth", statusCode == 200);
 
-        } catch (JSONException | IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return ctx;
@@ -95,7 +94,7 @@ public class AuthService {
             ctx.put("is_auth", false);
             ctx.put("message", body.getMessage());
             AccessToken.getInstance().remove();
-        } catch (JSONException | IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return ctx;

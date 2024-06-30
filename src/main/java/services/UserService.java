@@ -9,7 +9,6 @@ import configs.URI;
 import exceptions.ResponseException;
 import helpers.Http;
 import java.io.IOException;
-import org.json.JSONException;
 import responses.ResponseBody;
 import utilities.Context;
 import models.User;
@@ -40,7 +39,7 @@ public class UserService {
             User user = body.get("user", User.class);
             ctx.put("user", user);
 
-        } catch (JSONException | IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return ctx;
@@ -67,7 +66,7 @@ public class UserService {
             var body = new ResponseBody(response.getEntity());
             ctx.put("message", body.getMessage());
 
-        } catch (JSONException | IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return ctx;
