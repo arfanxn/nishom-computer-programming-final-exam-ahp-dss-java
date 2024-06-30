@@ -37,6 +37,7 @@ public class UserService {
             
             var body = new ResponseBody(response.getEntity());
             User user = body.get("user", User.class);
+            ctx.put("message", body.getMessage());
             ctx.put("user", user);
 
         } catch (IOException e) {

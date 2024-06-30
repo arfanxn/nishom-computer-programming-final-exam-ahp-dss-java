@@ -41,6 +41,7 @@ public class EditSelf extends javax.swing.JPanel implements Contextable {
     private void fillFields() {
         try {
             this.ctx = this.service.showSelf(this.ctx);
+            this.ctx.remove("message");
             User user = this.ctx.<User>get("user", User.class);
             this.nameField.setText(user.getName());
             this.emailField.setText(user.getEmail());
@@ -129,11 +130,6 @@ public class EditSelf extends javax.swing.JPanel implements Contextable {
         nameLabel.setText("Name");
 
         nameField.setFont(new java.awt.Font("Monospaced", 0, 18)); // NOI18N
-        nameField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nameFieldActionPerformed(evt);
-            }
-        });
 
         emailLabel.setFont(new java.awt.Font("Monospaced", 1, 18)); // NOI18N
         emailLabel.setForeground(new java.awt.Color(255, 255, 255));
@@ -262,10 +258,6 @@ public class EditSelf extends javax.swing.JPanel implements Contextable {
             Alert.message(this, e.getMessage(), null);
         }
     }//GEN-LAST:event_saveBtnActionPerformed
-
-    private void nameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_nameFieldActionPerformed
 
     private void dashboardLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashboardLabelMouseClicked
         MainFrame.getInstance().setComponent(new Index(this.ctx));

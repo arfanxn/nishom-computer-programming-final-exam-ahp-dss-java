@@ -31,15 +31,18 @@ public class Main {
         JPanel initialComponent;
 
         try {
-            ctx = Services.initAuth().check(ctx);
+            ctx = Services.initUser().showSelf(ctx);
+            ctx.remove("message");
+            initialComponent = new Index(ctx);
         } catch (ResponseException e) {
-            e.printStackTrace();
-            System.exit(1);
+            if (e.getStatusCode() == 401) { // if unauthorized 
+                initialComponent = new Login(ctx);
+            } else {
+                e.printStackTrace();
+                System.exit(1);
+                return;
+            }
         }
-
-        // if authorized then the initialComponent would be dashboard page
-        var isAuth = ctx.<Boolean>get("is_auth", Boolean.class);
-        initialComponent = isAuth ? new Index(ctx) : new Login(ctx);
 
         MainFrame frame = MainFrame.getInstance();
         frame.initialize(initialComponent);
