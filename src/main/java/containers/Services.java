@@ -6,6 +6,7 @@ package containers;
 
 import services.UserService;
 import services.AuthService;
+import services.GoalService;
 
 /**
  *
@@ -19,6 +20,10 @@ public class Services {
     
     public static AuthService initAuth() {
         return new AuthService();
+    }
+    
+    public static GoalService initGoal() {
+        return new GoalService();
     }
     
 }
