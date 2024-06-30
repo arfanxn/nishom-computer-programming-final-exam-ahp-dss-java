@@ -4,22 +4,49 @@
  */
 package views.users;
 
-import javax.swing.JOptionPane;
+import containers.Services;
+import exceptions.ResponseException;
+import helpers.Alert;
+import interfaces.Contextable;
+import java.util.HashMap;
+import models.User;
+import services.UserService;
 import views.MainFrame;
 import views.auths.Login;
 import views.goals.*;
+import utilities.Context;
+import java.util.Map;
 
 /**
  *
  * @author arfanxn
  */
-public class EditSelf extends javax.swing.JPanel {
+public class EditSelf extends javax.swing.JPanel implements Contextable {
+    
+    private Context ctx;
+    private UserService service;
 
     /**
      * Creates new form Index
+     * @param ctx
      */
-    public EditSelf() {
+    public EditSelf(Context ctx) {
+        this.ctx = ctx;
+        this.service = Services.initUser();
         initComponents();
+        
+        this.fillFields();
+    }
+        
+    private void fillFields() {
+        try {
+            this.ctx = this.service.showSelf(this.ctx);
+            User user = this.ctx.<User>get("user", User.class);
+            this.nameField.setText(user.getName());
+            this.emailField.setText(user.getEmail());
+        } catch (ResponseException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -65,11 +92,6 @@ public class EditSelf extends javax.swing.JPanel {
         accountLabel.setFont(new java.awt.Font("Monospaced", 1, 18)); // NOI18N
         accountLabel.setForeground(new java.awt.Color(255, 255, 255));
         accountLabel.setText("Account");
-        accountLabel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                accountLabelMouseClicked(evt);
-            }
-        });
 
         javax.swing.GroupLayout navbarPanelLayout = new javax.swing.GroupLayout(navbarPanel);
         navbarPanel.setLayout(navbarPanelLayout);
@@ -115,8 +137,10 @@ public class EditSelf extends javax.swing.JPanel {
 
         emailLabel.setFont(new java.awt.Font("Monospaced", 1, 18)); // NOI18N
         emailLabel.setForeground(new java.awt.Color(255, 255, 255));
-        emailLabel.setText("Email");
+        emailLabel.setText("Email (you can only update email through our website)");
 
+        emailField.setEditable(false);
+        emailField.setBackground(new java.awt.Color(226, 232, 240));
         emailField.setFont(new java.awt.Font("Monospaced", 0, 18)); // NOI18N
 
         currentPasswordLabel.setFont(new java.awt.Font("Monospaced", 1, 18)); // NOI18N
@@ -221,12 +245,22 @@ public class EditSelf extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void accountLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_accountLabelMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_accountLabelMouseClicked
-
     private void saveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
-        // TODO add your handling code here:
+        Map<String, String> form = new HashMap<>();
+        User user = this.ctx.get("user", User.class);
+        String userId = user.getId();
+        form.put("id", userId);
+        form.put("name", this.nameField.getText());
+        form.put("current_password", String.valueOf(this.currentPasswordField.getPassword()));
+        form.put("new_password", String.valueOf(this.newPasswordField.getPassword()));
+        form.put("new_password_confirmation", String.valueOf(this.newPasswordConfirmationField.getPassword()));
+        this.ctx.put("form", form);
+        try {
+            this.ctx = service.update(this.ctx);
+            Alert.message(this, ctx, null);
+        } catch (ResponseException e) {
+            Alert.message(this, e.getMessage(), null);
+        }
     }//GEN-LAST:event_saveBtnActionPerformed
 
     private void nameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameFieldActionPerformed
@@ -234,20 +268,22 @@ public class EditSelf extends javax.swing.JPanel {
     }//GEN-LAST:event_nameFieldActionPerformed
 
     private void dashboardLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashboardLabelMouseClicked
-        MainFrame.getInstance().setComponent(new Index());
+        MainFrame.getInstance().setComponent(new Index(this.ctx));
     }//GEN-LAST:event_dashboardLabelMouseClicked
 
     private void logoutLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_logoutLabelMouseClicked
-        int option = JOptionPane.showConfirmDialog(
+        Alert.confirmation(
                 this,
                 "Are you sure you want to logout?",
-                "Logout",
-                JOptionPane.YES_NO_OPTION
-        );
-        if (option == JOptionPane.YES_OPTION) {
-            MainFrame.getInstance().setComponent(new Login());
-        }
-
+                () -> {
+                    try {
+                        this.ctx = Services.initAuth().logout(this.ctx);
+                        MainFrame.getInstance().setComponent(new Login(this.ctx));
+                    } catch (ResponseException e) {
+                        Alert.message(this, e.getMessage(), null);
+                    }
+                },
+                null);
     }//GEN-LAST:event_logoutLabelMouseClicked
 
 

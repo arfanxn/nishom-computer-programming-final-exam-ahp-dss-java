@@ -4,19 +4,28 @@
  */
 package views.goals;
 
+import interfaces.Contextable;
 import views.MainFrame;
 import views.users.EditSelf;
+import utilities.Context;
+import helpers.Alert;
 
 /**
  *
  * @author arfanxn
  */
-public class Index extends javax.swing.JPanel {
+public class Index extends javax.swing.JPanel implements Contextable {
+
+    private Context ctx;
 
     /**
      * Creates new form Index
+     *
+     * @param ctx
      */
-    public Index() {
+    public Index(Context ctx) {
+        this.ctx = ctx;
+        Alert.message(this, ctx, null);
         initComponents();
     }
 
@@ -226,7 +235,7 @@ public class Index extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void accountLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_accountLabelMouseClicked
-        MainFrame.getInstance().setComponent(new EditSelf());
+        MainFrame.getInstance().setComponent(new EditSelf(this.ctx));
     }//GEN-LAST:event_accountLabelMouseClicked
 
     private void searchFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchFieldActionPerformed

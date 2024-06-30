@@ -6,17 +6,23 @@ package views.goals;
 
 import views.MainFrame;
 import views.users.EditSelf;
+import interfaces.Contextable;
+import utilities.Context;
 
 /**
  *
  * @author arfanxn
  */
-public class Edit extends javax.swing.JPanel {
+public class Edit extends javax.swing.JPanel implements Contextable {
+    
+    private Context ctx;
 
     /**
      * Creates new form Index
+     * @param ctx
      */
-    public Edit() {
+    public Edit(Context ctx) {
+        this.ctx = ctx;
         initComponents();
     }
 
@@ -196,11 +202,11 @@ public class Edit extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void accountLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_accountLabelMouseClicked
-        MainFrame.getInstance().setComponent(new EditSelf());
+        MainFrame.getInstance().setComponent(new EditSelf(this.ctx));
     }//GEN-LAST:event_accountLabelMouseClicked
 
     private void dashboardLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashboardLabelMouseClicked
-        MainFrame.getInstance().setComponent(new Index());
+        MainFrame.getInstance().setComponent(new Index(this.ctx));
     }//GEN-LAST:event_dashboardLabelMouseClicked
 
     private void emailFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emailFieldActionPerformed

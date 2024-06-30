@@ -4,32 +4,34 @@
  */
 package views.auths;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import javax.swing.JOptionPane;
+import interfaces.Contextable;
 import views.MainFrame;
+import utilities.Context;
+import helpers.Alert;
 
 /**
  *
  * @author arfanxn
  */
-public class Register extends javax.swing.JPanel {
+public class Register extends javax.swing.JPanel implements Contextable {
+
+    private Context ctx;
 
     /**
      * Creates new form Login
+     *
+     * @param ctx
      */
-    public Register() {
+    public Register(Context ctx) {
+        this.ctx = ctx;
         initComponents();
 
-        CompletableFuture.delayedExecutor(100, TimeUnit.MILLISECONDS).execute(() -> {
-            JOptionPane.showConfirmDialog(
-                    this,
-                    "Please register through our website at \"ahp-dss.com\".",
-                    "Register",
-                    JOptionPane.YES_OPTION
-            );
-            MainFrame.getInstance().setComponent(new Login());
-        });
+        var parentComponent = this;
+        Alert.message(
+                parentComponent,
+                "Please register through our website at \"ahp-dss.com\".",
+                () -> MainFrame.getInstance().setComponent(new Login(this.ctx))
+        );
     }
 
     /**
@@ -181,7 +183,7 @@ public class Register extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void registerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerBtnActionPerformed
-        
+
     }//GEN-LAST:event_registerBtnActionPerformed
 
     private void nameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameFieldActionPerformed
@@ -189,7 +191,7 @@ public class Register extends javax.swing.JPanel {
     }//GEN-LAST:event_nameFieldActionPerformed
 
     private void loginLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_loginLabelMouseClicked
-        MainFrame.getInstance().setComponent(new Login());
+        MainFrame.getInstance().setComponent(new Login(this.ctx));
     }//GEN-LAST:event_loginLabelMouseClicked
 
 

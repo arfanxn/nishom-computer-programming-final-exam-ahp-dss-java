@@ -4,19 +4,33 @@
  */
 package views.auths;
 
+import exceptions.ResponseException;
+import services.AuthService;
+import utilities.Context;
 import views.MainFrame;
 import views.goals.Index;
+import interfaces.Contextable;
+import helpers.Alert;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
  * @author arfanxn
  */
-public class Login extends javax.swing.JPanel {
+public class Login extends javax.swing.JPanel implements Contextable {
+    
+    private Context ctx;
+    private AuthService service;
 
     /**
      * Creates new form Login
+     * @param ctx
      */
-    public Login() {
+    public Login(Context ctx) {
+        this.ctx = ctx;
+        Alert.message(this, ctx, null);
+        this.service = containers.Services.initAuth();
         initComponents();
     }
 
@@ -48,11 +62,6 @@ public class Login extends javax.swing.JPanel {
         titleLabel.setText("AHP DSS");
 
         emailField.setFont(new java.awt.Font("Monospaced", 0, 18)); // NOI18N
-        emailField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                emailFieldActionPerformed(evt);
-            }
-        });
 
         emailLabel.setFont(new java.awt.Font("Monospaced", 1, 18)); // NOI18N
         emailLabel.setForeground(new java.awt.Color(255, 255, 255));
@@ -138,17 +147,20 @@ public class Login extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginBtnActionPerformed
-        MainFrame.getInstance().setComponent(new Index());
+        Map<String, String> form = new HashMap<>();
+        form.put("email", emailField.getText());
+        form.put("password", String.valueOf(passwordField.getPassword()));
+        this.ctx.put("form", form);
+        try {
+            this.ctx = service.login(ctx);
+            MainFrame.getInstance().setComponent(new Index(ctx));
+        } catch (ResponseException e) {
+            Alert.message(this, e.getMessage(), null);
+        }
     }//GEN-LAST:event_loginBtnActionPerformed
-
-    private void emailFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emailFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_emailFieldActionPerformed
-
     private void registerLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_registerLabelMouseClicked
-        MainFrame.getInstance().setComponent(new Register());
+        MainFrame.getInstance().setComponent(new Register(this.ctx));
     }//GEN-LAST:event_registerLabelMouseClicked
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel cardPanel;
