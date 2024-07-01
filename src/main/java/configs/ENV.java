@@ -4,6 +4,7 @@
  */
 package configs;
 
+import utilities.AccessToken;
 import io.github.cdimascio.dotenv.Dotenv;
 
 /**
@@ -33,22 +34,13 @@ public class ENV {
     } 
     
     // get retrieves env by key
-    public String get(String key) {
-        return this.dotenv.get(key);
+    public static String get(String key) {
+        return ENV.getInstance().dotenv.get(key);
     }
     
     // should be called after load()
     public ENV configure() {
-        this.configureAccessToken();
         return this;
-    }
-
-    public void configureAccessToken() {
-        String password = this.get("ACCESS_TOKEN_PASSWORD");
-        String filename = this.get("ACCESS_TOKEN_FILENAME");
-        AccessToken.getInstance()
-                .setEncryptorPassword(password)
-                .setFilename(filename);
     }
 
 }

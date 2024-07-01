@@ -1,6 +1,6 @@
 package helpers;
 
-import configs.AccessToken;
+import utilities.AccessToken;
 import java.io.IOException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.fluent.Request;
@@ -38,7 +38,7 @@ public class Http {
         request = request.addHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
 
         try {
-            var tokenStr = AccessToken.getInstance().get();
+            var tokenStr = AccessToken.get();
             request = request.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + tokenStr);
         } catch (IOException e) {
         }

@@ -4,11 +4,18 @@
  */
 package views.goals;
 
+import containers.Services;
+import exceptions.ResponseException;
 import interfaces.Contextable;
 import views.MainFrame;
 import views.users.EditSelf;
 import utilities.Context;
 import helpers.Alert;
+import java.awt.Color;
+import javax.swing.table.DefaultTableModel;
+import responses.Pagination;
+import services.GoalService;
+import models.Goal;
 
 /**
  *
@@ -17,6 +24,9 @@ import helpers.Alert;
 public class Index extends javax.swing.JPanel implements Contextable {
 
     private Context ctx;
+    private GoalService service;
+    private Pagination<Goal> pagination;
+    private final String[] tableColumnNames = {"Title", "Description"};
 
     /**
      * Creates new form Index
@@ -25,8 +35,63 @@ public class Index extends javax.swing.JPanel implements Contextable {
      */
     public Index(Context ctx) {
         this.ctx = ctx;
+        this.service = Services.initGoal();
+        
         Alert.message(this, ctx, null);
+        
         initComponents();
+     
+        this.fetchGoals();
+        this.loadTable();
+        this.stylePaginationBtns();
+    }
+    
+    private void fetchGoals() {
+        try {
+            this.service.index(this.ctx);
+            this.ctx.remove("message");
+        } catch (ResponseException e) {
+            System.out.println(e.getMessage());
+        }
+        this.pagination = this.ctx.<Pagination<Goal>>get("goals");
+    }
+    
+    private void loadTable() {
+        int length = this.pagination.getData().size();
+        
+        Object[][] data = new Object[length][2];
+        for (int i = 0; i < length; i++) {
+            Goal goal = this.pagination.getData().get(i);
+            data[i][0]= goal.getTitle();
+            data[i][1]= goal.getDescription();
+        }
+
+        DefaultTableModel tableModel = new DefaultTableModel(data, this.tableColumnNames);
+        goalsTable.setModel(tableModel);
+    }
+    
+    private void stylePaginationBtns () {
+        if (this.pagination.getNextPageUrl() == null) {
+            this.nextBtn.setBackground(Color.decode("#E2E8F0"));
+            this.nextBtn.setEnabled(false);
+        } else {
+            this.nextBtn.setBackground(Color.decode("#3b82f6"));
+            this.nextBtn.setEnabled(true);
+        }
+        
+        if (this.pagination.getCurrentPage() == 1) {
+            this.firstBtn.setBackground(Color.decode("#E2E8F0"));
+            this.firstBtn.setEnabled(false);
+
+            this.prevBtn.setBackground(Color.decode("#E2E8F0"));
+            this.prevBtn.setEnabled(false);
+        } else {
+            this.firstBtn.setBackground(Color.decode("#3b82f6"));
+            this.firstBtn.setEnabled(true);
+
+            this.prevBtn.setBackground(Color.decode("#3b82f6"));
+            this.prevBtn.setEnabled(true);
+        }
     }
 
     /**
@@ -93,49 +158,48 @@ public class Index extends javax.swing.JPanel implements Contextable {
         scrollPane.setBackground(new java.awt.Color(245, 158, 11));
         scrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
-        goalsTable.setFont(new java.awt.Font("Monospaced", 1, 12)); // NOI18N
+        goalsTable.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
         goalsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {"Goal 1", "Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum", "Edit"},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {}
             },
             new String [] {
-                "Title", "Description", "Actions"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class
-            };
 
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
             }
-        });
-        goalsTable.setColumnSelectionAllowed(true);
-        goalsTable.setSelectionBackground(null);
+        ));
+        goalsTable.setToolTipText("");
+        goalsTable.setCellSelectionEnabled(false);
+        goalsTable.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        goalsTable.setDropMode(javax.swing.DropMode.ON);
+        goalsTable.setRowHeight(25);
+        goalsTable.setRowSelectionAllowed(true);
+        goalsTable.setSelectionBackground(java.awt.Color.blue);
+        goalsTable.setSelectionForeground(new java.awt.Color(255, 255, 255));
+        goalsTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         goalsTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         goalsTable.setShowGrid(true);
-        goalsTable.setShowVerticalLines(false);
+        goalsTable.setSurrendersFocusOnKeystroke(true);
         goalsTable.getTableHeader().setReorderingAllowed(false);
+        goalsTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                goalsTableMouseClicked(evt);
+            }
+        });
         scrollPane.setViewportView(goalsTable);
         goalsTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         formPanel.setBackground(new java.awt.Color(59, 130, 246));
 
         searchField.setFont(new java.awt.Font("Monospaced", 0, 18)); // NOI18N
-        searchField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                searchFieldActionPerformed(evt);
-            }
-        });
 
         addBtn.setFont(new java.awt.Font("Monospaced", 1, 18)); // NOI18N
         addBtn.setText("Add");
@@ -238,29 +302,49 @@ public class Index extends javax.swing.JPanel implements Contextable {
         MainFrame.getInstance().setComponent(new EditSelf(this.ctx));
     }//GEN-LAST:event_accountLabelMouseClicked
 
-    private void searchFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_searchFieldActionPerformed
-
     private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
-
+        try {
+            this.service.add(this.ctx);
+            Alert.message(this, this.ctx, null);
+            this.loadTable();
+        } catch (ResponseException e) {
+            Alert.message(formPanel, e.getMessage(), null);
+        }
     }//GEN-LAST:event_addBtnActionPerformed
 
     private void searchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
-        // TODO add your handling code here:
+        this.ctx.put("keyword", this.searchField.getText());
+        this.fetchGoals();
+        this.loadTable();
+        this.stylePaginationBtns();
     }//GEN-LAST:event_searchBtnActionPerformed
 
     private void nextBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextBtnActionPerformed
-        // TODO add your handling code here:
+        this.ctx.put("page", this.pagination.getCurrentPage() + 1);
+        this.fetchGoals();
+        this.loadTable();
+        this.stylePaginationBtns();
     }//GEN-LAST:event_nextBtnActionPerformed
 
     private void prevBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_prevBtnActionPerformed
-        // TODO add your handling code here:
+        this.ctx.put("page", this.pagination.getCurrentPage() - 1);
+        this.fetchGoals();
+        this.loadTable();
+        this.stylePaginationBtns();
     }//GEN-LAST:event_prevBtnActionPerformed
 
     private void firstBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_firstBtnActionPerformed
-        // TODO add your handling code here:
+        this.ctx.put("page", 1);
+        this.fetchGoals();
+        this.loadTable();
+        this.stylePaginationBtns();
     }//GEN-LAST:event_firstBtnActionPerformed
+
+    private void goalsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_goalsTableMouseClicked
+        int row = goalsTable.getSelectedRow();
+        System.out.println("selected row is: "+ String.valueOf(row));
+        MainFrame.getInstance().setComponent(new Edit(this.ctx));
+    }//GEN-LAST:event_goalsTableMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

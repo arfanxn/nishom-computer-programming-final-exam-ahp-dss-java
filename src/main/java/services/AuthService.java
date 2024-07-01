@@ -7,8 +7,8 @@ package services;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import configs.AccessToken;
-import configs.URI;
+import utilities.AccessToken;
+import configs.ENV;
 import org.apache.http.entity.ContentType;
 import models.User;
 import utilities.Context;
@@ -32,7 +32,9 @@ public class AuthService {
             var bodyStr = om.writeValueAsString(ctx.get("body"));
 
             var response = Http
-                    .request(URI.api("/login"), "post")
+                    .request(
+                            ENV.get("API_URL") + "/login",
+                            "post")
                     .bodyString(bodyStr, ContentType.APPLICATION_JSON)
                     .execute()
                     .returnResponse();
@@ -45,7 +47,7 @@ public class AuthService {
             var user = body.get("user", new TypeReference<User>() {
             });
 
-            AccessToken.getInstance().set(user.getAccessToken());
+            AccessToken.set(user.getAccessToken());
             
             ctx.put("message", body.getMessage());
             ctx.put("user", user);
@@ -59,7 +61,9 @@ public class AuthService {
 
     public Context logout(Context ctx) throws ResponseException {
         try {
-            var response = Http.request(URI.api("/logout"), "delete")
+            var response = Http.request(
+                    ENV.get("API_URL") + "/logout",
+                    "delete")
                     .execute()
                     .returnResponse();
 
@@ -71,7 +75,7 @@ public class AuthService {
 
             ctx.put("message", body.getMessage());
 
-            AccessToken.getInstance().remove();
+            AccessToken.remove();
         } catch (IOException e) {
             e.printStackTrace();
         }
