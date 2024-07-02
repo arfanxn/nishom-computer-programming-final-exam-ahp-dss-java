@@ -341,8 +341,9 @@ public class Index extends javax.swing.JPanel implements Contextable {
     }//GEN-LAST:event_firstBtnActionPerformed
 
     private void goalsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_goalsTableMouseClicked
-        int row = goalsTable.getSelectedRow();
-        System.out.println("selected row is: "+ String.valueOf(row));
+        int index = goalsTable.getSelectedRow();
+        Goal goal = this.pagination.getData().get(index);
+        this.ctx.put("goal_id", goal.getId());
         MainFrame.getInstance().setComponent(new Edit(this.ctx));
     }//GEN-LAST:event_goalsTableMouseClicked
 
