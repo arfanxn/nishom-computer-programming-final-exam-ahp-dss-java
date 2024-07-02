@@ -1,5 +1,6 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /*
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author arfanxn
  */
+@JsonIgnoreProperties({"laravel_through_key"})
 public class PerformanceScore {
     
     private String id;

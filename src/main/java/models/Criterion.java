@@ -4,13 +4,14 @@
  */
 package models;
 
-//import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  *
  * @author arfanxn
  */
+@JsonIgnoreProperties({"laravel_through_key", "weight_percentage"})
 public class Criterion {
 
     private String id;
@@ -19,6 +20,8 @@ public class Criterion {
     private String name;
     @JsonProperty("impact_type")
     private Boolean impactType;
+    @JsonProperty("impact_type_description")
+    private String impactTypeDescription;
     private int index;
     private int weight;
     @JsonProperty("created_at")
@@ -58,6 +61,14 @@ public class Criterion {
         this.impactType = impactType;
     }
 
+    public String getImpactTypeDescription() {
+        return impactTypeDescription;
+    }
+
+    public void setImpactTypeDescription(String impactTypeDescription) {
+        this.impactTypeDescription = impactTypeDescription;
+    }
+
     public int getIndex() {
         return index;
     }
@@ -89,7 +100,6 @@ public class Criterion {
     public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
     }
-    
 
-
+   
 }
